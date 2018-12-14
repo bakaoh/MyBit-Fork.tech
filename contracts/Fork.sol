@@ -48,9 +48,12 @@ contract Fork {
   external
   payable {
     require( database.boolStorage(keccak256(abi.encodePacked("folkIsRecepient", id, msg.sender))) );
+    uint amount = database.uintStorage(keccak256(abi.encodePacked("folkAmountEach", id)));
+    require( amount == msg.value );
 
     address billOwner = database.addressStorage(keccak256(abi.encodePacked("folkOwner", id)));
-    billOwner.transfer( database.uintStorage(keccak256(abi.encodePacked("folkAmountEach", id))) );
+    billOwner.transfer(amount);
+    database.deleteBool(keccak256(abi.encodePacked("folkIsRecepient", id, msg.sender)));
     emit LogNewPayment(id, msg.sender);
   }
 
